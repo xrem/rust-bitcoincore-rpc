@@ -126,9 +126,21 @@ fn get_auth() -> bitcoincore_rpc::Auth {
     };
 }
 
+#[cfg(not(feature = "proxy"))]
 fn new_wallet_client(wallet_name: &str) -> Client {
     let url = format!("{}{}{}", get_rpc_url(), "/wallet/", wallet_name);
     Client::new(&url, get_auth()).unwrap()
+}
+
+#[cfg(feature = "proxy")]
+fn new_wallet_client(wallet_name: &str) -> Client {
+    let url = format!("{}{}{}", get_rpc_url(), "/wallet/", wallet_name);
+    Client::new_with_proxy(&url, get_auth(), &get_proxy_url(), None).unwrap()
+}
+
+#[cfg(feature = "proxy")]
+fn get_proxy_url() -> String {
+    return std::env::var("PROXY_URL").expect("PROXY_URL must be set in proxy feature");
 }
 
 fn main() {

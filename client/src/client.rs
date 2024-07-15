@@ -1281,6 +1281,22 @@ impl fmt::Debug for Client {
 }
 
 impl Client {
+    #[cfg(feature = "proxy")]
+    /// Creates a client to a bitcoind JSON-RPC server via SOCK5 proxy.
+    pub fn new_with_proxy(
+        url: &str,
+        auth: Auth,
+        proxy_addr: &str,
+        proxy_auth: Option<(&str, &str)>,
+    ) -> Result<Self> {
+        let (user, pass) = auth.get_user_pass()?;
+        jsonrpc::client::Client::http_proxy(url, user, pass, proxy_addr, proxy_auth)
+            .map(|client| Client {
+                client,
+            })
+            .map_err(|e| super::error::Error::JsonRpc(e.into()))
+    }
+
     /// Creates a client to a bitcoind JSON-RPC server.
     ///
     /// Can only return [Err] when using cookie authentication.

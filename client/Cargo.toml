@@ -19,7 +19,8 @@ name = "bitcoincore_rpc"
 path = "src/lib.rs"
 
 [features]
-default = ["rand"]
+proxy = ["jsonrpc/proxy"]
+default = ["rand", "proxy"]
 rand = ["bitcoincore-rpc-json/rand"]
 
 [dependencies]
